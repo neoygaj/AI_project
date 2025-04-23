@@ -2,7 +2,8 @@ import os
 import matplotlib.pyplot as plt
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
-log_dir = "logs/dqn_breakout/DQN_1"
+# log_dir = "logs/dqn_breakout/{run_name}"
+log_dir = "logs/dqn_breakout"
 output_pdf = "training_summary.pdf"
 
 tags = {

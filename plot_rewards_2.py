@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
-log_dir = "logs/dqn_breakout/DQN_1"
+log_dir = "logs/dqn_breakout"
 
 ea = EventAccumulator(log_dir)
 ea.Reload()
@@ -26,7 +26,9 @@ for tag in tags:
         plt.ylabel(tag.split("/")[-1].replace("_", " ").capitalize())
         plt.title(tag)
         plt.grid(True)
-        filename = tag.replace("/", "_") + ".png"
+        # filename = tag.replace("/", "_") + ".png"
+        filename = os.path.join("plots", tag.replace("/", "_") + ".png")
+        os.makedirs("plots", exist_ok=True)
         plt.savefig(filename)
         print(f"✅ Saved {filename}")
         plt.close()

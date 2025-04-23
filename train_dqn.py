@@ -8,10 +8,14 @@ from stable_baselines3 import DQN
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecVideoRecorder
 from stable_baselines3.common.callbacks import CheckpointCallback
+from stable_baselines3.common.logger import configure
+from datetime import datetime
+
 
 # Output directories
-log_dir = "logs/dqn_breakout"
-checkpoint_dir = "checkpoints"
+run_name = datetime.now().strftime("%Y%m%d-%H%M%S")
+log_dir = "logs/dqn_breakout/{run_name}"
+checkpoint_dir = "checkpoints/longrun"
 video_dir = "videos"
 os.makedirs(log_dir, exist_ok=True)
 os.makedirs(checkpoint_dir, exist_ok=True)
@@ -19,13 +23,8 @@ os.makedirs(video_dir, exist_ok=True)
 
 # Environment factory
 def make_env():
-    env = gym.make(
-        "ALE/Breakout-v5",
-        render_mode="rgb_array",
-        frameskip=1  # ✅ Correct: directly passed
-    )
+    env = gym.make("ALE/Breakout-v5", render_mode="rgb_array", frameskip=1)  # ✅ Correct: directly passed
     env = AtariPreprocessing(env, frame_skip=4, grayscale_obs=False, scale_obs=False, screen_size=84, terminal_on_life_loss=False, noop_max=30)
-
     env = Monitor(env)
     return env
 
@@ -62,10 +61,19 @@ model = DQN(
     tensorboard_log=log_dir,
     policy_kwargs=dict(normalize_images=False),
 )
+new_logger = configure(log_dir, ["stdout", "tensorboard"])
+model.set_logger(new_logger)
 
 # Train for 200k steps
-model.learn(total_timesteps=200_000, callback=checkpoint_callback)
+model.learn(total_timesteps=1_000_000, callback=checkpoint_callback)
 model.save("dqn_breakout_final")
+
+from stable_baselines3.common.evaluation import evaluate_policy
+
+mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10, deterministic=True)
+print(f"✅ Evaluation: mean_reward={mean_reward:.2f}, std={std_reward:.2f}")
+
+name_prefix = f"dqn-breakout-{datetime.now().strftime('%Y%m%d-%H%M%S')}" # adds a unique UNIX timestamp
 
 # 🎥 Record a demo video
 record_env = DummyVecEnv([make_env])
@@ -75,7 +83,7 @@ record_env = VecVideoRecorder(
     video_folder=video_dir,
     record_video_trigger=lambda step: step == 0,
     video_length=1000,
-    name_prefix="dqn-breakout"
+    name_prefix=name_prefix
 )
 
 obs = record_env.reset()
@@ -86,6 +94,3 @@ while not done:
 
 record_env.close()
 print(f"🎥 Video saved to: {video_dir}")
-
-
-

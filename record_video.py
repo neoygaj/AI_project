@@ -5,6 +5,7 @@ from gymnasium.wrappers import AtariPreprocessing
 from stable_baselines3 import DQN
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecVideoRecorder
+from datetime import datetime
 
 # Output directory
 video_dir = "videos"
@@ -19,6 +20,8 @@ def make_env():
 
 # Load trained model
 model = DQN.load("dqn_breakout_final")
+
+name_prefix = f"dqn-breakout-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
 
 # Create wrapped environment
 record_env = DummyVecEnv([make_env])
