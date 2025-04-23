@@ -1,0 +1,11 @@
+from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+
+log_dir = "logs/dqn_breakout/DQN_1"
+
+ea = EventAccumulator(log_dir)
+ea.Reload()
+
+print("📋 Available tags:")
+for tag in ea.Tags()["scalars"]:
+    print(f" - {tag}")
+
