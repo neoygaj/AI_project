@@ -9,13 +9,15 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecVideoRecorder
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.logger import configure
+from stable_baselines3.dqn.policies import CnnPolicy
+from sb3_contrib import QRDQN 
 from datetime import datetime
 
 
 # Output directories
 run_name = datetime.now().strftime("%Y%m%d-%H%M%S")
-log_dir = "logs/dqn_breakout/{run_name}"
-checkpoint_dir = "checkpoints/longrun"
+log_dir = f"logs/dqn_breakout/{run_name}"
+checkpoint_dir = f"checkpoints/{run_name}"
 video_dir = "videos"
 os.makedirs(log_dir, exist_ok=True)
 os.makedirs(checkpoint_dir, exist_ok=True)
@@ -44,7 +46,7 @@ checkpoint_callback = CheckpointCallback(
 )
 
 # DQN model
-model = DQN(
+model = QRDQN(
     policy="CnnPolicy",
     env=env,
     learning_rate=1e-4,
@@ -59,7 +61,7 @@ model = DQN(
     exploration_final_eps=0.01,
     verbose=1,
     tensorboard_log=log_dir,
-    policy_kwargs=dict(normalize_images=False),
+    policy_kwargs=dict(normalize_images=False, net_arch=[256, 256],),
 )
 new_logger = configure(log_dir, ["stdout", "tensorboard"])
 model.set_logger(new_logger)
