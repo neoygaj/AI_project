@@ -2,6 +2,7 @@ import os
 import gymnasium as gym
 import numpy as np
 import ale_py  # 🔑 registers ALE environments
+import argparse
 from gymnasium.spaces import Box
 from gymnasium.wrappers import AtariPreprocessing
 from stable_baselines3 import DQN
@@ -9,13 +10,38 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecVideoRecorder
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.logger import configure
+from sb3_contrib import QRDQN
+from hyperparams import DQN_HYPERPARAMS
 from datetime import datetime
+from stable_baselines3.common.evaluation import evaluate_policy
+
+# 🛠 Parse command line
+parser = argparse.ArgumentParser()
+parser.add_argument("--algo", choices=["dqn", "qrdqn"], required=True, help="Choose the algorithm: dqn or qrdqn")
+parser.add_argument("--config", choices=["v1", "v2"], default="v1", help="Choose hyperparameter config: v1 or v2")
+args = parser.parse_args()
+
+# 🛠 Load hyperparams based on algorithm and config
+if args.algo == "dqn":
+    if args.config == "v1":
+        from hyperparams import DQN_HYPERPARAMS as HYPERPARAMS
+    elif args.config == "v2":
+        from hyperparams_dqn_v2 import DQN_HYPERPARAMS as HYPERPARAMS
+    ModelClass = DQN
+
+elif args.algo == "qrdqn":
+    if args.config == "v1":
+        from hyperparams_qrdqn import QRDQN_HYPERPARAMS as HYPERPARAMS
+    else:
+        raise ValueError("QRDQN only supports config v1 for now")
+    
+    ModelClass = QRDQN
 
 
 # Output directories
-run_name = datetime.now().strftime("%Y%m%d-%H%M%S")
-log_dir = "logs/dqn_breakout/{run_name}"
-checkpoint_dir = "checkpoints/longrun"
+run_name = f"{args.algo}_{args.config}_{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+log_dir = f"logs/dqn_breakout/{run_name}"
+checkpoint_dir = f"checkpoints/{run_name}"
 video_dir = "videos"
 os.makedirs(log_dir, exist_ok=True)
 os.makedirs(checkpoint_dir, exist_ok=True)
@@ -32,7 +58,6 @@ def make_env():
 # Vectorized environment with frame stacking
 env = DummyVecEnv([make_env])
 env = VecFrameStack(env, n_stack=4, channels_order="last")
-
 print("🚨 Obs shape:", env.observation_space)
 
 
@@ -44,38 +69,26 @@ checkpoint_callback = CheckpointCallback(
 )
 
 # DQN model
-model = DQN(
+model = ModelClass(
     policy="CnnPolicy",
     env=env,
-    learning_rate=1e-4,
-    buffer_size=100_000,
-    learning_starts=10_000,
-    batch_size=32,
-    tau=1.0,
-    gamma=0.99,
-    train_freq=4,
-    target_update_interval=10_000,
-    exploration_fraction=0.1,
-    exploration_final_eps=0.01,
     verbose=1,
     tensorboard_log=log_dir,
-    policy_kwargs=dict(normalize_images=False),
+    **HYPERPARAMS  # <--- 🔥 inject all hyperparams automatically
 )
 new_logger = configure(log_dir, ["stdout", "tensorboard"])
 model.set_logger(new_logger)
 
 # Train for 200k steps
-model.learn(total_timesteps=1_000_000, callback=checkpoint_callback)
-model.save("dqn_breakout_final")
-
-from stable_baselines3.common.evaluation import evaluate_policy
+total_timesteps = 1_000_000
+model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
+model.save(f"{args.algo}_breakout_final_{run_name}")  # ✅ Avoid overwriting
 
 mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10, deterministic=True)
 print(f"✅ Evaluation: mean_reward={mean_reward:.2f}, std={std_reward:.2f}")
 
-name_prefix = f"dqn-breakout-{datetime.now().strftime('%Y%m%d-%H%M%S')}" # adds a unique UNIX timestamp
-
 # 🎥 Record a demo video
+name_prefix = f"{args.algo}-breakout-{run_name}"
 record_env = DummyVecEnv([make_env])
 record_env = VecFrameStack(record_env, n_stack=4)
 record_env = VecVideoRecorder(
