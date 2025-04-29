@@ -84,6 +84,7 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
     - Final Performance: 
         - Reward reached 25 - 30 after 1,000,000 steps with good settings.
         - Longer runs up to 3,000,000 expected to reach 50 - 100 reward.
+        
     - Best hyperparams:
 
         learning_rate = 1e-4
@@ -93,7 +94,7 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
         network = [512, 512, 256]
         n_quantiles = 51
 
-    - Observation: QRDQN smoothed out "plateaus" in reward see in standard DQN.
+    - Observation: QRDQN smoothed out "plateaus" in reward seen in standard DQN.
 
 ![Best run](good.png)
 
