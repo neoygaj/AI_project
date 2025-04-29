@@ -8,7 +8,7 @@
 
 This project aimed to explore and test reinforcement learning (RL) approaches for the Atari Breakout game using two deep RL modes:
 - DQN (Deep Q-Network)
-- QRDB (Quantile Regression Deep Q-Network)
+- QRDQN (Quantile Regression Deep Q-Network)
 
 The goal was to train an agent to learn optimal actions moving the paddle in the game PONG solely based on training experience to achieve as high of a score as possible.
 
@@ -58,7 +58,8 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
     Use of a large replay buffer and lowering learning rate reduced overfitting to short-term rewards
 
 ### Network Size:  
-    Switching from [256, 256] -> [512, 512, 256] gave better results. However, larger networks such as [1024, 512, 256] resulted in overfitting and more challenging optimization.
+    Switching from [256, 256] -> [512, 512, 256] gave better results. However, larger networks such as [1024, 512, 256] resulted in overfitting and more challenging 
+    optimization.
 
 ### Training Duration:
     - DQN needed at least 1 million steps to show clear reward improvement.
@@ -107,7 +108,7 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
 ### Suggestions for Future Improvements
     - Train for 10,000,000 steps to reach expert-level performance.
     - Try Double-DQN or Dueling-DQN architectues.
-    - Prioritized Experience REplay for better sampling.
+    - Prioritized Experience Replay for better sampling.
     - Tune n_quantiles(101, 201) for sharper QRDQN performance.
     - Experiment with different games
 
