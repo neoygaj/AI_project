@@ -76,6 +76,7 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
         batch_size = 64
         network = [256, 256]
 
+
 ### QRDQN RESULTS
 
     - Training curve: Faster reward growth, more stable.
@@ -92,6 +93,8 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
         n_quantiles = 51
 
     - Observation: QRDQN smoothed out "plateaus" in reward see in standard DQN.
+
+![Best run](good.png)
 
 # 4. CONCLUSIONS AND FUTURE WORK
 
