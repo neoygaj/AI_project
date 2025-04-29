@@ -1,3 +1,6 @@
+# run with python train_dqn.py --algo dqn --config v1
+# or python train_dqn.py --algo qrdqn --config v1
+
 import os
 import gymnasium as gym
 import numpy as np
@@ -87,23 +90,62 @@ model.save(f"{args.algo}_breakout_final_{run_name}")  # ✅ Avoid overwriting
 mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10, deterministic=True)
 print(f"✅ Evaluation: mean_reward={mean_reward:.2f}, std={std_reward:.2f}")
 
-# 🎥 Record a demo video
-name_prefix = f"{args.algo}-breakout-{run_name}"
-record_env = DummyVecEnv([make_env])
-record_env = VecFrameStack(record_env, n_stack=4)
-record_env = VecVideoRecorder(
-    record_env,
-    video_folder=video_dir,
-    record_video_trigger=lambda step: step == 0,
-    video_length=1000,
-    name_prefix=name_prefix
-)
+# # 🎥 Record a demo video
+# name_prefix = f"{args.algo}-breakout-{run_name}"
+# record_env = DummyVecEnv([make_env])
+# record_env = VecFrameStack(record_env, n_stack=4)
+# record_env = VecVideoRecorder(
+#     record_env,
+#     video_folder=video_dir,
+#     record_video_trigger=lambda step: step == 0,
+#     video_length=1000,
+#     name_prefix=name_prefix
+# )
 
-obs = record_env.reset()
-done = False
-while not done:
-    action, _ = model.predict(obs, deterministic=True)
-    obs, _, done, _ = record_env.step(action)
+# obs = record_env.reset()
+# done = False
+# while not done:
+#     action, _ = model.predict(obs, deterministic=True)
+#     obs, _, done, _ = record_env.step(action)
 
-record_env.close()
-print(f"🎥 Video saved to: {video_dir}")
+# record_env.close()
+# print(f"🎥 Video saved to: {video_dir}")
+
+
+# 🎥 Record beginning, middle, and end of training
+def record_demo_clip(model, make_env, step_offset, name_suffix, video_length=5000):
+    """Record a short demo starting from a given environment step offset."""
+    record_env = DummyVecEnv([make_env])
+    record_env = VecFrameStack(record_env, n_stack=4)
+    
+    # Create video recorder with a unique name
+    recorder = VecVideoRecorder(
+        record_env,
+        video_folder=video_dir,
+        record_video_trigger=lambda step: step == 0,
+        video_length=video_length,
+        name_prefix=f"{args.algo}-breakout-{run_name}-{name_suffix}"
+    )
+    
+    obs = recorder.reset()
+    
+    # Optional: Advance the environment by some steps to simulate mid/late gameplay
+    for _ in range(step_offset):
+        action = record_env.action_space.sample()  # random actions to advance
+        obs, _, done, _ = record_env.step(action)
+        if done:
+            record_env.reset()
+    
+    # Now record
+    done = False
+    while not done:
+        action, _ = model.predict(obs, deterministic=True)
+        obs, _, done, _ = recorder.step(action)
+    
+    recorder.close()
+    print(f"🎥 Saved {name_suffix} demo to: {video_dir}")
+
+# Now call it for beginning, middle, end
+record_demo_clip(model, make_env, step_offset=0, name_suffix="start")
+record_demo_clip(model, make_env, step_offset=10_000, name_suffix="middle")
+record_demo_clip(model, make_env, step_offset=20_000, name_suffix="end")

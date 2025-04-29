@@ -2,9 +2,17 @@ import os
 import matplotlib.pyplot as plt
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
-log_dir = "logs/dqn_breakout"
+parent_log_dir = "logs/dqn_breakout"
 
-ea = EventAccumulator(log_dir)
+# Find the most recent run folder
+all_runs = [os.path.join(parent_log_dir, d) for d in os.listdir(parent_log_dir) if os.path.isdir(os.path.join(parent_log_dir, d))]
+if not all_runs:
+    raise FileNotFoundError(f"No runs found inside {parent_log_dir}")
+
+latest_run = max(all_runs, key=os.path.getmtime)  # newest folder
+print(f"📁 Using logs from: {latest_run}")
+
+ea = EventAccumulator(latest_run)
 ea.Reload()
 
 tags = [
@@ -13,6 +21,8 @@ tags = [
     "rollout/exploration_rate",
     "time/fps"
 ]
+
+os.makedirs("plots", exist_ok=True)
 
 for tag in tags:
     try:
@@ -26,9 +36,7 @@ for tag in tags:
         plt.ylabel(tag.split("/")[-1].replace("_", " ").capitalize())
         plt.title(tag)
         plt.grid(True)
-        # filename = tag.replace("/", "_") + ".png"
         filename = os.path.join("plots", tag.replace("/", "_") + ".png")
-        os.makedirs("plots", exist_ok=True)
         plt.savefig(filename)
         print(f"✅ Saved {filename}")
         plt.close()
