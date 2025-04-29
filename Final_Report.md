@@ -1,8 +1,8 @@
 # Deep Q-Networks and QR-DQN for Atari Breakout
 
 ### AUTHOR: JOHN GAYNES
-### [REPOSITORY: ](https://github.com/neoygaj/AI_project.git)
-### [DEMO VIDEO: ]()
+### [REPOSITORY](https://github.com/neoygaj/AI_project.git)
+### [DEMO VIDEO](https://youtube.com/shorts/6aru__G4aGs?feature=share)
 
 # 1. OVERVIEW
 
