@@ -6,6 +6,11 @@
 
 #  when training completes, run python plot_rewards_2.py
 #  then run python training_summary.py
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 80afd65 (Temp commit before rebase)
 
 import os
 import gymnasium as gym
@@ -116,3 +121,8 @@ while not done:
 
 record_env.close()
 print(f"🎥 Video saved to: {video_dir}")
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 80afd65 (Temp commit before rebase)
