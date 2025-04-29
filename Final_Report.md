@@ -97,6 +97,7 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
     - Observation: QRDQN smoothed out "plateaus" in reward seen in standard DQN.
 
 ![Best run](good.png)
+![Better 10M run](good2.png)
 
 # 4. CONCLUSIONS AND FUTURE WORK
 

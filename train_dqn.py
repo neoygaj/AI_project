@@ -89,7 +89,7 @@ new_logger = configure(log_dir, ["stdout", "tensorboard"])
 model.set_logger(new_logger)
 
 # Train for 200k steps
-total_timesteps = 1_000_000
+total_timesteps = 10_000_000
 model.learn(total_timesteps=total_timesteps, callback=checkpoint_callback)
 model.save(f"{args.algo}_breakout_final_{run_name}")  # ✅ Avoid overwriting
 

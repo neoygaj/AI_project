@@ -5,7 +5,7 @@ from stable_baselines3.common.utils import get_linear_fn
 DQN_HYPERPARAMS = {
     "learning_rate": get_linear_fn(1e-4, 2e-5, 1.0),
     "gamma": 0.99,
-    "buffer_size": 1_000_000,
+    "buffer_size": 750_000,
     "learning_starts": 10_000,
     "batch_size": 16,
     "tau": 1.0,
