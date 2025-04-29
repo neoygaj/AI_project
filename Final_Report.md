@@ -114,8 +114,8 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
 
 # 5. REFERENCES
 
-    - ![1.](https://stable-baselines3.readthedocs.io/)
-    - ![2.](https://sb3-contrib.readthedocs.io/)
-    - ![3.](https://arxiv.org/abs/1207.4708)
-    - ![4.](https://github.com/Farama-Foundation/AutoROM)
-    - ![5.](https://gymnasium.farama.org/)
+![1.](https://stable-baselines3.readthedocs.io/)
+![2.](https://sb3-contrib.readthedocs.io/)
+![3.](https://arxiv.org/abs/1207.4708)
+![4.](https://github.com/Farama-Foundation/AutoROM)
+![5.](https://gymnasium.farama.org/)
