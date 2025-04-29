@@ -69,20 +69,35 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
 
 ### DQN RESULTS
     - Training curve: Reward steadily increased after 500,000 step.
-    - FInal Performance: Average episode reward around 20 after 1,000,000 steps.
-    - Best hyperparams:
+    - Final Performance: Average episode reward around 20 after 1,000,000 steps, 75-80 after 10,000,000 (added after submission)
+    - Best hyperparams 1,000,000:
 
         learning_rate = 5e-4
         gamma = 0.98
         batch_size = 64
         network = [256, 256]
 
+    ### ADDED AFTER SUBMISSION
+    
+    - Best hyperparams 10,000,000:
+
+        learning_rate = 1e-4
+        gamma = 0.99
+        buffer_size = 750,000
+        learning_starts = 10,000
+        batch_size = 16
+        target_update_interval = 5,000
+        exploration_fraction = 0.3
+        exploration_final_eps = 0.01
+        network = [1024, 1024]
+        normalized images = True
+
 
 ### QRDQN RESULTS
 
     - Training curve: Faster reward growth, more stable.
     - Final Performance: 
-        - Reward reached 25 - 30 after 1,000,000 steps with good settings.
+        - Reward reached 20 - 25 after 1,000,000 steps with good settings.
         - Longer runs up to 3,000,000 expected to reach 50 - 100 reward.
         
     - Best hyperparams:
@@ -95,8 +110,12 @@ Both of the algorithms were tested in the same environment to offer an unbiased 
         n_quantiles = 51
 
     - Observation: QRDQN smoothed out "plateaus" in reward seen in standard DQN.
+### QRDQN - BEST RUN
 
 ![Best run](good.png)
+
+### QDN - BEST RUN, 10,000,000 TIMESTEPS (ADDED AFTER SUBMISSION)
+
 ![Better 10M run](good2.png)
 
 # 4. CONCLUSIONS AND FUTURE WORK
